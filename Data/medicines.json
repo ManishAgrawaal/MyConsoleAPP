@@ -1,0 +1,18 @@
+[
+  {
+    "FullName": "Paracetamol",
+    "Notes": "Fever",
+    "ExpiryDate": "2026-05-15T00:00:00",
+    "Quantity": 5,
+    "Price": 20,
+    "Brand": "crocin"
+  },
+  {
+    "FullName": "Dolo 650",
+    "Notes": "fever and pain",
+    "ExpiryDate": "2027-12-31T00:00:00",
+    "Quantity": 5,
+    "Price": 30,
+    "Brand": "Dolo"
+  }
+]

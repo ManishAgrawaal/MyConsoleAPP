@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "aDAMOcF4On0=",
+  "success": true,
+  "projectFilePath": "E:\\MyConsoleApp\\MyConsoleApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Manish\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.22.1\\microsoft.visualstudio.azure.containers.tools.targets.1.22.1.nupkg.sha512"
+  ],
+  "logs": []
+}
