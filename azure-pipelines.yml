@@ -3,29 +3,86 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+# trigger:
+# - main
+
+# pool:
+#   vmImage: 'windows-latest'
+
+# variables:
+#   BuildConfiguration: 'Release'
+
+# steps:
+
+# - task: UseDotNet@2
+#   displayName: 'Install .NET SDK'
+#   inputs:
+#     packageType: 'sdk'
+#     version: '8.x'
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Restore NuGet Packages'
+#   inputs:
+#     command: 'restore'
+#     projects: '**/*.sln'
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Build Solution'
+#   inputs:
+#     command: 'build'
+#     projects: '**/*.sln'
+#     arguments: '--configuration $(BuildConfiguration)'
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Run Tests'
+#   inputs:
+#     command: 'test'
+#     projects: '**/*Tests/*.csproj'
+#     arguments: '--configuration $(BuildConfiguration)'
+#   continueOnError: true
+
+# - task: DotNetCoreCLI@2
+#   displayName: 'Publish Application'
+#   inputs:
+#     command: 'publish'
+#     publishWebProjects: true
+#     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+#     zipAfterPublish: true
+
+# - task: PublishBuildArtifacts@1
+#   displayName: 'Publish Build Artifact'
+#   inputs:
+#     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     ArtifactName: 'drop'
+
 trigger:
 - main
 
 pool:
-  vmImage: 'windows-latest'
+  name: LocalDockerPool
 
 variables:
   BuildConfiguration: 'Release'
+  ImageName: 'myconsoleapp'
+  ContainerName: 'myconsolecontainer'
 
 steps:
 
+# Install .NET SDK
 - task: UseDotNet@2
-  displayName: 'Install .NET SDK'
+  displayName: 'Install .NET 8 SDK'
   inputs:
     packageType: 'sdk'
     version: '8.x'
 
+# Restore NuGet Packages
 - task: DotNetCoreCLI@2
   displayName: 'Restore NuGet Packages'
   inputs:
     command: 'restore'
     projects: '**/*.sln'
 
+# Build Solution
 - task: DotNetCoreCLI@2
   displayName: 'Build Solution'
   inputs:
@@ -33,6 +90,7 @@ steps:
     projects: '**/*.sln'
     arguments: '--configuration $(BuildConfiguration)'
 
+# Run Tests (Optional)
 - task: DotNetCoreCLI@2
   displayName: 'Run Tests'
   inputs:
@@ -41,6 +99,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration)'
   continueOnError: true
 
+# Publish Application
 - task: DotNetCoreCLI@2
   displayName: 'Publish Application'
   inputs:
@@ -49,8 +108,42 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
 
+# Publish Artifact
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Build Artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
+
+# Verify Docker Installation
+- script: |
+    docker --version
+    docker ps
+  displayName: 'Verify Docker'
+
+# Build Docker Image
+- script: |
+    docker build -t $(ImageName):latest .
+  displayName: 'Build Docker Image'
+
+# Stop Existing Container
+- script: |
+    docker stop $(ContainerName)
+  displayName: 'Stop Existing Container'
+  continueOnError: true
+
+# Remove Existing Container
+- script: |
+    docker rm $(ContainerName)
+  displayName: 'Remove Existing Container'
+  continueOnError: true
+
+# Run New Container
+- script: |
+    docker run -d --name $(ContainerName) -p 8080:8080 $(ImageName):latest
+  displayName: 'Run Docker Container'
+
+# Verify Deployment
+- script: |
+    docker ps
+  displayName: 'Verify Running Container'
